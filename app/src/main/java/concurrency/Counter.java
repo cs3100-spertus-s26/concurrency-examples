@@ -26,7 +26,8 @@ public class Counter extends Thread {
 
   public static void main(String[] args) {
     printThread("At start of main()");
-    Counter counter1 = new Counter("Counter A", 5);
+    Counter counter1 = new Counter("Counter A", 3);
     counter1.start();
+    printThread("At end of main()");
   }
 }
