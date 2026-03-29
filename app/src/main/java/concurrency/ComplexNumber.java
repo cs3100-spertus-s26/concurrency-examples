@@ -26,7 +26,7 @@ public class ComplexNumber {
   public static void main(String[] args) {
       ComplexNumber c = new ComplexNumber(1, 1);
       printThread("Original: " + c);
-      c.negate();
+      new Thread(c::negate).start(); // easy way to create thread
       printThread("Negated: " + c);
   }
 }
