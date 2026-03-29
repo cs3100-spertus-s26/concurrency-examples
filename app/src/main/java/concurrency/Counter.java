@@ -11,15 +11,21 @@ public class Counter extends Thread {
     this.limit = limit;
   }
 
+  private static void printThread(String msg) {
+    System.out.println(String.format("thread %s: %s",
+        Thread.currentThread().getName(), msg));
+  }
+
   @Override
   public void run() {
     while (count < limit) {
       count++;
-      System.out.println(name + ": " + count);
+      printThread(name + ": " + count);
     }
   }
 
   public static void main(String[] args) {
+    printThread("At start of main()");
     Counter counter1 = new Counter("Counter A", 5);
     counter1.start();
   }
