@@ -1,5 +1,7 @@
 package concurrency;
 
+import static concurrency.Utilities.printThread;
+
 public class Counter extends Thread {
   private final String name;
   private int count;
@@ -9,11 +11,6 @@ public class Counter extends Thread {
     this.name = name;
     count = 0;
     this.limit = limit;
-  }
-
-  private static void printThread(String msg) {
-    System.out.println(String.format("thread %s: %s",
-        Thread.currentThread().getName(), msg));
   }
 
   @Override

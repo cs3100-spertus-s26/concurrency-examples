@@ -34,7 +34,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'concurrency.Counter'
+    mainClass = 'concurrency.ComplexNumber'
 }
 
 tasks.named('test') {
