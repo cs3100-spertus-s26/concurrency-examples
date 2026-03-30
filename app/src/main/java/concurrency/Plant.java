@@ -10,6 +10,7 @@ public class Plant implements Runnable {
   private static final int WATERING_INTERVAL_DAYS = 3;
   private Instant lastTimeWatered;
   private int numTimesWatered = 0;
+  private final Object huskyPlush = new Object();
 
   private int daysSinceWatered() {
     return (int) Duration.between(lastTimeWatered,
@@ -24,13 +25,15 @@ public class Plant implements Runnable {
 
   @Override
   public void run() {
-    if (lastTimeWatered == null
-        || daysSinceWatered() >= WATERING_INTERVAL_DAYS) {
-      printThread("About to water plant.");
-      waterPlant();
-      printThread("numTimesWatered: " + numTimesWatered);
-    } else {
-      printThread("No need to water plant.");
+    synchronized (huskyPlush) {
+      if (lastTimeWatered == null
+          || daysSinceWatered() >= WATERING_INTERVAL_DAYS) {
+        printThread("About to water plant.");
+        waterPlant();
+        printThread("numTimesWatered: " + numTimesWatered);
+      } else {
+        printThread("No need to water plant.");
+      }
     }
   }
 
