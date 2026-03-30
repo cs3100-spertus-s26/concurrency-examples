@@ -37,7 +37,7 @@ public class Plant implements Runnable {
 
   public static void main(String[] args) {
     Plant plant = new Plant();
-    new Thread(plant).start(); // roommate 1
-    new Thread(plant).start(); // roommate 2
+    new Thread(plant).run(); // roommate 1
+    new Thread(plant).run(); // roommate 2
   }
 }
