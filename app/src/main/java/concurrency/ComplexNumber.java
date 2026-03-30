@@ -23,10 +23,12 @@ public class ComplexNumber {
     return String.format("%d + %di", real, imaginary);
   }
 
-  public static void main(String[] args) {
-      ComplexNumber c = new ComplexNumber(1, 1);
-      printThread("Original: " + c);
-      new Thread(c::negate).start(); // easy way to create thread
-      printThread("Negated: " + c);
+  public static void main(String[] args) throws InterruptedException {
+    ComplexNumber c = new ComplexNumber(1, 1);
+    printThread("Original: " + c);
+    Thread thread0 = new Thread(c::negate);
+    thread0.start();
+    thread0.join(); // force main thread to wait for thread0 to finish
+    printThread("Negated: " + c);
   }
 }
