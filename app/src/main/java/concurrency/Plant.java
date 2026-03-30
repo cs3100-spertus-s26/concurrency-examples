@@ -23,8 +23,7 @@ public class Plant implements Runnable {
     lastTimeWatered = Instant.now();
   }
 
-  @Override
-  public synchronized void run() {
+  private void waterPlantIfNeeded() {
     if (lastTimeWatered == null
         || daysSinceWatered() >= WATERING_INTERVAL_DAYS) {
       printThread("About to water plant.");
@@ -35,9 +34,14 @@ public class Plant implements Runnable {
     }
   }
 
+  @Override
+  public synchronized void run() {
+    waterPlantIfNeeded();
+  }
+
   public static void main(String[] args) {
     Plant plant = new Plant();
-    new Thread(plant).run(); // roommate 1
-    new Thread(plant).run(); // roommate 2
+    new Thread(plant).start(); // roommate 1
+    new Thread(plant::waterPlantIfNeeded).start(); // roommate 2
   }
 }
