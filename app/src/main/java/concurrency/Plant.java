@@ -24,16 +24,14 @@ public class Plant implements Runnable {
   }
 
   @Override
-  public void run() {
-    synchronized (huskyPlush) {
-      if (lastTimeWatered == null
-          || daysSinceWatered() >= WATERING_INTERVAL_DAYS) {
-        printThread("About to water plant.");
-        waterPlant();
-        printThread("numTimesWatered: " + numTimesWatered);
-      } else {
-        printThread("No need to water plant.");
-      }
+  public synchronized void run() {
+    if (lastTimeWatered == null
+        || daysSinceWatered() >= WATERING_INTERVAL_DAYS) {
+      printThread("About to water plant.");
+      waterPlant();
+      printThread("numTimesWatered: " + numTimesWatered);
+    } else {
+      printThread("No need to water plant.");
     }
   }
 
