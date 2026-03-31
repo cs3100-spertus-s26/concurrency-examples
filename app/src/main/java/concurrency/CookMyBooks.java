@@ -28,9 +28,12 @@ public class CookMyBooks {
   private static void handleFetchRecipeRequest()  {
     log("UI thread received fetch recipe request");
     log("UI is non-responsive");
-    String recipe = fetchRecipe();
-    updateUI(recipe);
+
+    // Create a worker thread to fetch the recipe
+    new Thread(CookMyBooks::fetchRecipe).start();
     log("UI is now responsive again");
+
+    // How do we update the UI with the recipe?
   }
 
   public static void main(String[] args) {
