@@ -9,7 +9,7 @@ public class CookMyBooks {
     System.out.printf("%4dms %s %s%n", elapsed, thread, message);
   }
 
-  private static String fetchRecipe() {
+  private static void fetchRecipe() {
     log("Fetching recipe...");
     try {
       Thread.sleep(2000); // simulates slow network call
@@ -17,10 +17,14 @@ public class CookMyBooks {
       // this can't happen in our program
     }
     log("Got recipe!");
-    return "Cookie Recipe";
+    updateUI("Cookie Recipe");
   }
 
   private static void updateUI(String recipe) {
+    if (!Thread.currentThread().getName().equals("main")) {
+      throw new IllegalStateException(
+        "updateUI must be called on the main thread");
+    }
     log("Updating UI: " + recipe);
   }
 
@@ -32,8 +36,6 @@ public class CookMyBooks {
     // Create a worker thread to fetch the recipe
     new Thread(CookMyBooks::fetchRecipe).start();
     log("UI is now responsive again");
-
-    // How do we update the UI with the recipe?
   }
 
   public static void main(String[] args) {
