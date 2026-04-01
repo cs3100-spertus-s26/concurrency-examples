@@ -1,9 +1,11 @@
 package concurrency;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 
 public class CookMyBooks {
   private static final long START_TIME = System.currentTimeMillis();
+  private static Task<String> fetchRecipeTask = null;
 
   private static void log(String message) {
     long elapsed = System.currentTimeMillis() - START_TIME;
@@ -16,7 +18,9 @@ public class CookMyBooks {
     try {
       Thread.sleep(2000); // simulates slow network call
     } catch (InterruptedException e) {
-      // this can't happen in our program
+      log("fetchRecipe() was interrupted");
+      log("isCancelled is: " + fetchRecipeTask.isCancelled());
+      return null;
     }
     log("Got recipe!");
     return "Cookie Recipe";
@@ -24,7 +28,7 @@ public class CookMyBooks {
 
   private static void updateUI(String recipe) {
     if (!Thread.currentThread().getName().equals(
-      "JavaFX Application Thread")) {
+        "JavaFX Application Thread")) {
       throw new IllegalStateException(
           "updateUI must be called on the UI thread");
     }
@@ -35,19 +39,30 @@ public class CookMyBooks {
     log("Error: " + error.getMessage());
   }
 
-  // This runs in the UI thread.
+  // This runs in the UI thread
   private static void handleFetchRecipeRequest() {
     log("UI thread received fetch recipe request");
-    BackgroundTaskRunner.run(
+    fetchRecipeTask = BackgroundTaskRunner.run(
         () -> fetchRecipe(),
         recipe -> updateUI(recipe),
         error -> showError(error));
     log("UI is now responsive again");
   }
 
-  public static void main(String[] args) {
+  // This runs in the UI thread
+  private static void handleCancelFetchRecipeRequest() {
+    log("UI thread received cancel request");
+    if (fetchRecipeTask != null) {
+      fetchRecipeTask.cancel();
+    }
+  }
+
+  public static void main(String[] args) throws InterruptedException {
     Platform.startup(() -> {
     }); // initialize JavaFX without a GUI
     Platform.runLater(() -> handleFetchRecipeRequest());
+    // Wait 1 second before cancelling request
+    Thread.sleep(1000);
+    handleCancelFetchRecipeRequest();
   }
 }
