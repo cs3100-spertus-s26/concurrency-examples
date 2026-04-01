@@ -54,15 +54,16 @@ public class CookMyBooks {
     log("UI thread received cancel request");
     if (fetchRecipeTask != null) {
       fetchRecipeTask.cancel();
+      updateUI("fetch recipe request cancelled");
+      fetchRecipeTask = null;
     }
   }
 
   public static void main(String[] args) throws InterruptedException {
-    Platform.startup(() -> {
-    }); // initialize JavaFX without a GUI
+    Platform.startup(() -> {}); // initialize JavaFX without a GUI
     Platform.runLater(() -> handleFetchRecipeRequest());
     // Wait 1 second before cancelling request
     Thread.sleep(1000);
-    handleCancelFetchRecipeRequest();
+    Platform.runLater(() -> handleCancelFetchRecipeRequest());
   }
 }
