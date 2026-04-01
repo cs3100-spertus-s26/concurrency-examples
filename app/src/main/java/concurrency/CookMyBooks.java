@@ -17,7 +17,9 @@ public class CookMyBooks {
     double pi = 0;
     for (int i = 0; i < 100_000_000; i++) {
         pi += Math.pow(-1, i) / (2 * i + 1);
-        if (calculatePiTask != null && calculatePiTask.isCancelled()) {
+        // Prevent race condition by caching calculatePiTask.
+        Task task = calculatePiTask;
+        if (task != null && task.isCancelled()) {
           log("calculatePi was cancelled after " + i + " iterations");
           return "Cancelled";
         }
