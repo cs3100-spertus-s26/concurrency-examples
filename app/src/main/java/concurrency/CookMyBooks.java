@@ -5,7 +5,7 @@ import javafx.concurrent.Task;
 
 public class CookMyBooks {
   private static final long START_TIME = System.currentTimeMillis();
-  private static Task<String> calculatePiTask = null;
+  private static volatile Task<String> calculatePiTask = null;
 
   private static void log(String message) {
     long elapsed = System.currentTimeMillis() - START_TIME;
@@ -17,6 +17,10 @@ public class CookMyBooks {
     double pi = 0;
     for (int i = 0; i < 100_000_000; i++) {
         pi += Math.pow(-1, i) / (2 * i + 1);
+        if (calculatePiTask != null && calculatePiTask.isCancelled()) {
+          log("calculatePi was cancelled after " + i + " iterations");
+          return "Cancelled";
+        }
     }
     pi *= 4;
     log("Calculated Pi: " + pi);
