@@ -1,5 +1,7 @@
 package concurrency;
 
+import javafx.application.Platform;
+
 public class CookMyBooks {
   private static final long START_TIME = System.currentTimeMillis();
 
@@ -9,7 +11,7 @@ public class CookMyBooks {
     System.out.printf("%4dms %s %s%n", elapsed, thread, message);
   }
 
-  private static void fetchRecipe() {
+  private static String fetchRecipe() {
     log("Fetching recipe...");
     try {
       Thread.sleep(2000); // simulates slow network call
@@ -17,28 +19,35 @@ public class CookMyBooks {
       // this can't happen in our program
     }
     log("Got recipe!");
-    updateUI("Cookie Recipe");
+    return "Cookie Recipe";
   }
 
   private static void updateUI(String recipe) {
-    if (!Thread.currentThread().getName().equals("main")) {
+    if (!Thread.currentThread().getName().equals(
+      "JavaFX Application Thread")) {
       throw new IllegalStateException(
-        "updateUI must be called on the main thread");
+          "updateUI must be called on the UI thread");
     }
     log("Updating UI: " + recipe);
   }
 
-  // This runs in the UI thread.
-  private static void handleFetchRecipeRequest()  {
-    log("UI thread received fetch recipe request");
-    log("UI is non-responsive");
+  private static void showError(Throwable error) {
+    log("Error: " + error.getMessage());
+  }
 
-    // Create a worker thread to fetch the recipe
-    new Thread(CookMyBooks::fetchRecipe).start();
+  // This runs in the UI thread.
+  private static void handleFetchRecipeRequest() {
+    log("UI thread received fetch recipe request");
+    BackgroundTaskRunner.run(
+        () -> fetchRecipe(),
+        recipe -> updateUI(recipe),
+        error -> showError(error));
     log("UI is now responsive again");
   }
 
   public static void main(String[] args) {
-    handleFetchRecipeRequest();
+    Platform.startup(() -> {
+    }); // initialize JavaFX without a GUI
+    Platform.runLater(() -> handleFetchRecipeRequest());
   }
 }
